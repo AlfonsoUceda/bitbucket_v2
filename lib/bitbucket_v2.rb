@@ -1,9 +1,18 @@
-require "bitbucket_v2/client"
-require "bitbucket_v2/constants"
-require "bitbucket_v2/repositories"
-require "bitbucket_v2/request"
 require "bitbucket_v2/version"
 
 module BitbucketV2
-  # Your code goes here...
+  autoload :Client,     "bitbucket_v2/client"
+  autoload :Request,    "bitbucket_v2/request"
+  autoload :Parser,     "bitbucket_v2/parser"
+  autoload :Error,      "bitbucket_v2/error"
+
+  module Models
+    autoload :Base,        "bitbucket_v2/models/base"
+    autoload :Comment,     "bitbucket_v2/models/comment"
+    autoload :Commit,      "bitbucket_v2/models/commit"
+    autoload :PullRequest, "bitbucket_v2/models/pull_request"
+    autoload :Repository,  "bitbucket_v2/models/repository"
+    autoload :Team,        "bitbucket_v2/models/team"
+    autoload :User,        "bitbucket_v2/models/user"
+  end
 end

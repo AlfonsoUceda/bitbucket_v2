@@ -21,11 +21,18 @@ Or install it yourself as:
 ## Usage
 
 
-Get the client
+Get the client with basic auth
 
 ```
-bitbucket = BitbucketV2::Client.new username: your_username, password: your_password
+bitbucket = BitbucketV2::Client.new basic_auth: { username: your_username, password: your_password }
 ```
+
+or oauth
+
+```
+bitbucket = BitbucketV2::Client.new oauth_auth: { consumer_key: consumer_key, consumer_secret: consumer_secret }
+```
+
 
 Get a specific user
 (All json reponse is parsed in an attribute called hashie.
@@ -46,7 +53,6 @@ And you'll get an array of BitbucketV2::Models::Repository class
 
 ## TODO
 
-* OAuth
 * Document
 * Tests
 * Support more methods from api v1

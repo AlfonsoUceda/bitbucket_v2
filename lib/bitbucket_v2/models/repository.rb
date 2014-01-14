@@ -19,6 +19,11 @@ module BitbucketV2
         self.class.make_request hashie.links.pull_requests.href, model: :PullRequest
       end
 
+      def changesets
+        url = "#{REPOSITORIES_ENDPOINT}/#{hashie.full_name}/changesets"
+        self.class.make_request url, model: :Changeset, version: "1.0"
+      end
+
       class << self
         def find_by_owner(owner)
           make_request "#{REPOSITORIES_ENDPOINT}/#{owner}", model: :Repository

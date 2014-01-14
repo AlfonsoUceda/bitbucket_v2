@@ -19,7 +19,7 @@ module BitbucketV2
 
       class << self
         def find_by_owner_and_slug_and_revision(owner, slug, revision)
-          make_request "#{Repository::REPOSITORY_ENDPOINT}/#{owner}/#{slug}/commit/#{revision}", model: :commit
+          make_request "#{Repository::REPOSITORY_ENDPOINT}/#{owner}/#{slug}/commit/#{revision}", model: :Commit
         end
       end
     end

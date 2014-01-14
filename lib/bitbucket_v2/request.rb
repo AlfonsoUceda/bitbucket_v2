@@ -3,7 +3,9 @@ require 'httparty'
 module BitbucketV2
   class Request
     include HTTParty
-    base_uri 'bitbucket.org/api/2.0'
+    base_uri "bitbucket.org/api"
+
+    DEFAULT_API_VERSION = "2.0"
 
     class << self
       attr_accessor :username
@@ -11,8 +13,20 @@ module BitbucketV2
 
       def request(url, params = {})
         method = params[:method] ? params.delete(:method) : :get
+        url = full_uri(url, params.delete(:version))
         response = self.new.public_send method, url, params
         BitbucketV2::Parser.new(response, model: params.delete(:model)).parse
+      end
+
+      private
+
+      def full_uri(url, version)
+        "/#{version_api(version)}#{url}"
+      end
+
+      def version_api(version = nil)
+        return DEFAULT_API_VERSION unless version
+        version
       end
     end
 

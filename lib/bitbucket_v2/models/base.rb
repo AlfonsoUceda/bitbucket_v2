@@ -1,5 +1,3 @@
-require 'hashie'
-
 module BitbucketV2
   module Models
     class Base

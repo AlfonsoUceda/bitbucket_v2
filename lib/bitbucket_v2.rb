@@ -1,10 +1,12 @@
 require "bitbucket_v2/version"
+require "hashie"
 
 module BitbucketV2
-  autoload :Client,     "bitbucket_v2/client"
-  autoload :Request,    "bitbucket_v2/request"
-  autoload :Parser,     "bitbucket_v2/parser"
-  autoload :Error,      "bitbucket_v2/error"
+  autoload :Client,   "bitbucket_v2/client"
+  autoload :Error,    "bitbucket_v2/error"
+  autoload :Parser,   "bitbucket_v2/parser"
+  autoload :Request,  "bitbucket_v2/request"
+  autoload :Response, "bitbucket_v2/response"
 
   module Models
     autoload :Base,        "bitbucket_v2/models/base"

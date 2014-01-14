@@ -1,9 +1,9 @@
-require 'httparty'
+require 'rest-client'
+require 'base64'
+require 'oauth'
 
 module BitbucketV2
   class Request
-    include HTTParty
-    base_uri "https://bitbucket.org/!api"
 
     DEFAULT_API_VERSION = "2.0".freeze
 
@@ -11,10 +11,27 @@ module BitbucketV2
       attr_accessor :username
       attr_accessor :password
 
+      def set_basic_auth(auth)
+        RestClient.reset_before_execution_procs
+        @username = auth[:username]
+        @password = auth[:password]
+      end
+
+      def set_oauth_auth(auth)
+        clean_basic_auth
+        consumer = OAuth::Consumer.new(auth[:consumer_key], 
+                                      auth[:consumer_secret],
+                                      site: base_url_with_version)
+        access_token = OAuth::AccessToken.new consumer
+        RestClient.add_before_execution_proc do |request, params|
+          access_token.sign! request
+        end
+      end
+
       def request(url, params = {})
         method = params[:method] ? params.delete(:method) : :get
         url = full_uri(url, params.delete(:version))
-        response = self.new.public_send method, url, params
+        response = BitbucketV2::Response.new(self.new.public_send(method, url, params))
         BitbucketV2::Parser.new(response, model: params.delete(:model)).parse
       end
 
@@ -26,7 +43,7 @@ module BitbucketV2
         "#{uri}#{path}"
       end
 
-      def base_url_with_version(version)
+      def base_url_with_version(version = DEFAULT_API_VERSION)
         "#{base_uri}/#{version_api(version)}"
       end
 
@@ -34,29 +51,38 @@ module BitbucketV2
         return DEFAULT_API_VERSION unless version
         version
       end
+
+      def base_uri
+        "https://bitbucket.org/!api"
+      end
+
+      def clean_basic_auth
+        username = nil
+        password = nil
+      end
     end
 
     def get(url, params = {})
-      self.class.get url, params.merge!(basic_auth)
+      RestClient.get url, params.merge!(basic_auth)
     end
 
     def post(url, params = {})
-      self.class.post url, params.merge!(basic_auth)
+      RestClient.post url, params.merge!(basic_auth)
     end
 
     def put(url, params = {})
-      self.class.put url, params.merge!(basic_auth)
+      RestClient.put url, params.merge!(basic_auth)
     end
 
     def delete(url, params = {})
-      self.class.delete url, params.merge!(basic_auth)
+      RestClient.delete url, params.merge!(basic_auth)
     end
 
     private
 
     def basic_auth
-      { basic_auth: { username: self.class.username, 
-                      password: self.class.password } }
+      auth = 'Basic ' + Base64.encode64( "#{self.class.username}:#{self.class.password}" ).chomp
+      { Authorization: auth }
     end
   end
 end

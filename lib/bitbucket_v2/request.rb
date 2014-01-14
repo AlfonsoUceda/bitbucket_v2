@@ -3,9 +3,9 @@ require 'httparty'
 module BitbucketV2
   class Request
     include HTTParty
-    base_uri "bitbucket.org/api"
+    base_uri "https://bitbucket.org/!api"
 
-    DEFAULT_API_VERSION = "2.0"
+    DEFAULT_API_VERSION = "2.0".freeze
 
     class << self
       attr_accessor :username
@@ -21,7 +21,13 @@ module BitbucketV2
       private
 
       def full_uri(url, version)
-        "/#{version_api(version)}#{url}"
+        uri = base_url_with_version(version)
+        path = url.gsub(uri, "")
+        "#{uri}#{path}"
+      end
+
+      def base_url_with_version(version)
+        "#{base_uri}/#{version_api(version)}"
       end
 
       def version_api(version = nil)
